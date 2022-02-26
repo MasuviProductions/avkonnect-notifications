@@ -5,7 +5,7 @@ service: node-boilerplate
 provider:
     name: aws
     runtime: nodejs14.x
-    region: ${env:AWS_REGION}
+    region: ${file(./env):AWS_REGION}
     lambdaHashingVersion: 20201221
     apiGateway:
         binaryMediaTypes:
