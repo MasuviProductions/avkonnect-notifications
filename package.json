@@ -47,6 +47,7 @@
         "aws-sdk": "^2.1082.0",
         "dotenv": "^16.0.0",
         "fastify": "^3.27.2",
+        "serverless": "^3.4.0",
         "serverless-http": "^2.7.0"
     }
 }
