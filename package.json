@@ -9,7 +9,11 @@
         "lint": "eslint . --ext .ts",
         "prettier:fix": "prettier --config .prettierrc --fix \"src/**/*.{ts,css,html}\" --max-warnings=0",
         "start:dev": "nodemon",
-        "start": "npm run build && node build/server.js"
+        "start:server": "node ./build/server.js",
+        "start": "npm run build && node build/server.js",
+        "serverless:credentials": "eval $(grep '^AWS_KEY' .env) && eval $(grep '^AWS_SECRET' .env) && serverless config credentials --provider aws --key ${AWS_KEY} --secret ${AWS_SECRET}",
+        "serverless:deploy:prod": "serverless deploy --stage prod",
+        "serverless:deploy:dev": "serverless deploy --stage dev"
     },
     "husky": {
         "hooks": {
