@@ -1,3 +1,5 @@
-console.log('Hello world');
+const add = (num1: number, num2: number) => {
+    return num1 + num2;
+};
 
-const a = 5;
+add(2, 3);
