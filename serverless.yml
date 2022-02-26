@@ -1,0 +1,31 @@
+# serverless.yml
+
+service: node-boilerplate
+
+provider:
+    name: aws
+    runtime: nodejs14.x
+    region: ap-south-1
+    lambdaHashingVersion: 20201221
+    apiGateway:
+        binaryMediaTypes:
+            - '*/*'
+
+package:
+    patterns:
+        - '!*'
+        - '!src/**'
+        - 'node_modules'
+        - 'build'
+        - '.env'
+
+functions:
+    app:
+        handler: ./build/serverless.handler
+        events:
+            - http:
+                  path: api/v1
+                  method: any
+                  request:
+                      contentHandling: CONVERT_TO_TEXT
+            - http: 'ANY {proxy+}'

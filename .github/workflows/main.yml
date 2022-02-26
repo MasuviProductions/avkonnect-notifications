@@ -1,0 +1,38 @@
+name: Node Boilerplate
+
+on:
+    push:
+        branches: [main, development]
+
+    workflow_dispatch:
+
+jobs:
+    serverless-deployment:
+        runs-on: ubuntu-latest
+        env:
+            PROD_VARIABLES: ${{ secrets.PROD_VARIABLES }}
+            DEV_VARIABLES: ${{ secrets.DEV_VARIABLES }}
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Intialize .env
+              run: |
+                  touch .env
+                  [[ ${GITHUB_REF#refs/heads/} = main ]] && echo "${PROD_VARIABLES}" >> .env || echo "${DEV_VARIABLES}" >> .env
+
+            - name: Install node packages
+              run: npm install
+
+            - name: Code Lint
+              run: npm run lint:fix
+
+            - name: Generating build
+              run: npm run build
+
+            - name: Configure AWS credentials
+              run: npm run serverless:credentials
+
+            - name: Deploy to AWS
+              run: |
+                  [[ ${GITHUB_REF#refs/heads/} = main ]] && npm run serverless:deploy:prod || npm run serverless:deploy:dev

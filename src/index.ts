@@ -1,5 +1,13 @@
-const add = (num1: number, num2: number) => {
-    return num1 + num2;
-};
+import { fastify } from 'fastify';
+import initRouter from './routes';
+import initDB from './utils/db/client';
 
-add(2, 3);
+const APP = fastify({
+    logger: true,
+});
+
+initDB();
+initRouter(APP);
+
+export { APP };
+export default APP;
