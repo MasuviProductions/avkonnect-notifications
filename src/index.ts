@@ -1,12 +1,16 @@
 import { fastify } from 'fastify';
 import initRouter from './routes';
-import initDB from './utils/db/client';
+import { initDynamoDB } from './db/client';
+import { errorHandler } from './middlewares/errorHandler';
+
+initDynamoDB();
 
 const APP = fastify({
     logger: true,
 });
 
-initDB();
+APP.setErrorHandler(errorHandler);
+
 initRouter(APP);
 
 export { APP };

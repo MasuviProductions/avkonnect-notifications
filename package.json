@@ -32,6 +32,7 @@
     "devDependencies": {
         "@types/dotenv": "^8.2.0",
         "@types/node": "^17.0.21",
+        "@types/uuid": "^8.3.4",
         "@typescript-eslint/eslint-plugin": "^5.12.1",
         "@typescript-eslint/parser": "^5.12.1",
         "eslint": "^8.10.0",
@@ -46,8 +47,10 @@
     "dependencies": {
         "aws-sdk": "^2.1082.0",
         "dotenv": "^16.0.0",
+        "dynamoose": "^2.8.5",
         "fastify": "^3.27.2",
         "serverless": "^3.4.0",
-        "serverless-http": "^2.7.0"
+        "serverless-http": "^2.7.0",
+        "uuid": "^8.3.2"
     }
 }

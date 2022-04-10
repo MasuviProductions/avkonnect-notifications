@@ -19,8 +19,15 @@ package:
         - 'build'
         - '.env'
 
+resources:
+    Resources:
+        NotificationsSQSQueue:
+            Type: 'AWS::SQS::Queue'
+            Properties:
+                QueueName: avkonnect-notifications-queue-${opt:stage, self:provider.stage}
+
 functions:
-    app:
+    notifications:
         handler: ./build/serverless.handler
         events:
             - http:
@@ -29,3 +36,13 @@ functions:
                   request:
                       contentHandling: CONVERT_TO_TEXT
             - http: 'ANY {proxy+}'
+    notifications-generator:
+        handler: ./build/events/index.notificationsActivityHandler
+        events:
+            - sqs:
+                  arn:
+                      Fn::GetAtt:
+                          - NotificationsSQSQueue
+                          - Arn
+                  batchSize: 10
+                  maximumBatchingWindow: 60
