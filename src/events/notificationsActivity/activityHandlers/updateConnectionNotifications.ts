@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { v4 } from 'uuid';
 import DB_HELPERS from '../../../db/helpers';
 import { INotification } from '../../../db/models/notifications';
@@ -9,33 +8,36 @@ const updateConnectionNotifications = async (
     notificationActivity: INotificationActivity,
     connectionActivityType: IConnectionActivityType
 ) => {
-    try {
-        const connectionResource = await DB_QUERIES.getConnection(notificationActivity.resourceRefId);
-        console.log('Fetched connection resource', JSON.stringify(connectionResource));
-
-        if (!connectionResource) {
-            //handle error
-            return;
-        }
-        const userNotificationBox = await DB_HELPERS.getUserNotificationsForceCreated(connectionResource.connectorId);
-        console.log('Fetched user notification resource', JSON.stringify(userNotificationBox));
-
-        const notification: INotification = {
-            id: v4(),
-            createdAt: Date.now(),
-            expiresAt: Math.pow(10, 38) - 1,
-            read: false,
-            resourceType: connectionActivityType,
-            resourceRef: connectionResource.id,
-        };
-        const updatedUserNotifications = await DB_QUERIES.updateUserNotification(userNotificationBox.id, [
-            notification,
-            ...userNotificationBox.notifications,
-        ]);
-        console.log('Updated user notification resource', JSON.stringify(updatedUserNotifications));
-    } catch (err: any) {
-        console.log(err.message);
+    const connectionResource = await DB_QUERIES.getConnection(notificationActivity.resourceRefId);
+    // eslint-disable-next-line no-console
+    console.info('Connection resource:', JSON.stringify(connectionResource));
+    if (!connectionResource) {
+        throw Error(`Connection resource ${notificationActivity.resourceRefId} not found`);
     }
+    const userNotificationBox = await DB_HELPERS.getUserNotificationsForceCreated(connectionResource.connectorId);
+    if (!userNotificationBox) {
+        throw Error(`User notifications resource for user ${connectionResource.connectorId} not found`);
+    }
+    // eslint-disable-next-line no-console
+    console.info('User notification resource:', JSON.stringify(userNotificationBox));
+    const notification: INotification = {
+        id: v4(),
+        createdAt: Date.now(),
+        expiresAt: Math.pow(10, 38) - 1,
+        read: false,
+        resourceType: connectionActivityType,
+        resourceRef: connectionResource.id,
+    };
+    const updatedUserNotifications = await DB_QUERIES.updateUserNotification(userNotificationBox.id, [
+        notification,
+        ...userNotificationBox.notifications,
+    ]);
+    if (!updatedUserNotifications) {
+        throw Error(`User notifications resource for user ${connectionResource.connectorId} could not be updated`);
+    }
+    // eslint-disable-next-line no-console
+    console.info('Updated user notification resource:', JSON.stringify(updatedUserNotifications));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return;
 };
 

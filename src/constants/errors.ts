@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export enum ErrorCode {
     NotFound = 'not_found',
     InternalServerError = 'internal_server_error',

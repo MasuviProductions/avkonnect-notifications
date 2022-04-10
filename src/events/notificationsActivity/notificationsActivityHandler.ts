@@ -10,8 +10,14 @@ interface ISQSEvent {
 }
 const notificationsActivityHandler = async (event: ISQSEvent) => {
     for (const message of event.Records) {
-        const notificationActivity = JSON.parse(message.body) as INotificationActivity;
-        await processNotificationActivity(notificationActivity);
+        try {
+            const notificationActivity = JSON.parse(message.body) as INotificationActivity;
+            await processNotificationActivity(notificationActivity);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            // eslint-disable-next-line no-console
+            console.log('ERROR:', err.message);
+        }
     }
 };
 

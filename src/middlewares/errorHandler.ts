@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { ErrorCode } from '../constants/errors';
 import { AppResponse } from '../interfaces/app';
 
-export const errorHandler = (error: Error, request: FastifyRequest, reply: FastifyReply) => {
+export const errorHandler = (error: Error, _request: FastifyRequest, reply: FastifyReply) => {
     const response: AppResponse<string> = {
         statusCode: 500,
         error: {
