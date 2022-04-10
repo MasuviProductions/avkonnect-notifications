@@ -6,11 +6,11 @@ interface ISQSEventRecord {
 }
 
 interface ISQSEvent {
-    records: ISQSEventRecord[];
+    Records: ISQSEventRecord[];
 }
 const notificationsActivityHandler = async (event: ISQSEvent) => {
-    for (const record of event.records) {
-        const notificationActivity = JSON.parse(record.body) as INotificationActivity;
+    for (const message of event.Records) {
+        const notificationActivity = JSON.parse(message.body) as INotificationActivity;
         processNotificationActivity(notificationActivity);
     }
 };
