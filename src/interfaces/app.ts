@@ -1,3 +1,5 @@
+import { Document } from 'dynamoose/dist/Document';
+
 export interface AppResponseError {
     code: string;
     message: string;
@@ -9,14 +11,13 @@ export interface AppResponse<T = unknown> {
     error?: AppResponseError;
 }
 
-export interface IBook {
-    id: string;
-    title: string;
-    author: string;
-}
+export type IDynamooseDocument<T> = T & Document;
 
-export interface IMovie {
-    id: string;
-    title: string;
-    director: string;
+export type IConnectionActivityType = 'connectionRequest' | 'connectionConfirmation';
+
+export type IActivityType = IConnectionActivityType;
+
+export interface INotificationActivity {
+    resourceRefId: string;
+    activityType: IActivityType;
 }
