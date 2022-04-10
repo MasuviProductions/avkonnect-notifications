@@ -11,7 +11,7 @@ interface ISQSEvent {
 const notificationsActivityHandler = async (event: ISQSEvent) => {
     for (const message of event.Records) {
         const notificationActivity = JSON.parse(message.body) as INotificationActivity;
-        processNotificationActivity(notificationActivity);
+        await processNotificationActivity(notificationActivity);
     }
 };
 
