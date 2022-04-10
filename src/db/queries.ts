@@ -7,7 +7,7 @@ const getConnection = async (connectionId: string): Promise<IConnection> => {
 };
 
 const getNotificationsByUserId = async (userId: string): Promise<INotifications | undefined> => {
-    const notifications = await Notifications.query('userResourceRef').contains(userId).exec();
+    const notifications = await Notifications.query('userResourceRef').eq(userId).exec();
     return notifications[0];
 };
 
