@@ -4,6 +4,7 @@ import updateConnectionNotifications from './activityHandlers/updateConnectionNo
 const processNotificationActivity = async (notificationActivity: INotificationActivity) => {
     switch (notificationActivity.activityType) {
         case 'connectionRequest': {
+            console.log('Entered connectionRequest switch');
             await updateConnectionNotifications(notificationActivity, 'connectionRequest');
             return;
         }

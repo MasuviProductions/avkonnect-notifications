@@ -11,11 +11,14 @@ const updateConnectionNotifications = async (
 ) => {
     try {
         const connectionResource = await DB_QUERIES.getConnection(notificationActivity.resourceRefId);
+        console.log('Fetched connection resource', JSON.stringify(connectionResource));
+
         if (!connectionResource) {
             //handle error
             return;
         }
         const userNotificationBox = await DB_HELPERS.getUserNotificationsForceCreated(connectionResource.connectorId);
+        console.log('Fetched user notification resource', JSON.stringify(userNotificationBox));
 
         const notification: INotification = {
             id: v4(),
@@ -25,10 +28,11 @@ const updateConnectionNotifications = async (
             resourceType: connectionActivityType,
             resourceRef: connectionResource.id,
         };
-        await DB_QUERIES.updateUserNotification(userNotificationBox.id, [
+        const updatedUserNotifications = await DB_QUERIES.updateUserNotification(userNotificationBox.id, [
             notification,
             ...userNotificationBox.notifications,
         ]);
+        console.log('Updated user notification resource', JSON.stringify(updatedUserNotifications));
     } catch (err: any) {
         console.log(err.message);
     }
