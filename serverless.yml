@@ -10,6 +10,13 @@ provider:
     apiGateway:
         binaryMediaTypes:
             - '*/*'
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:*
+          Resource:
+              - { 'Fn::GetAtt': ['DynamoDbExpenses', 'Arn'] } #you will also see the logical IDs below where they are provisioned
+              - { 'Fn::GetAtt': ['DynamoDbBudgets', 'Arn'] }
 
 package:
     patterns:
