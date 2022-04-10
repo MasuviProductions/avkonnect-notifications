@@ -37,7 +37,7 @@ functions:
                       contentHandling: CONVERT_TO_TEXT
             - http: 'ANY {proxy+}'
     notifications-generator:
-        handler: ./build/events/index.notificationsActivityHandler
+        handler: ./build/events/index.handler
         events:
             - sqs:
                   arn:
