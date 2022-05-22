@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify';
 import { getUserNotifications } from './controllers';
 
-const initializeMoviesRoutes = (
+const initializeNotificationRoutes = (
     fastify: FastifyInstance,
     _opts: FastifyRegisterOptions<FastifyPluginOptions>,
     done: () => void
@@ -10,4 +10,4 @@ const initializeMoviesRoutes = (
     done();
 };
 
-export default initializeMoviesRoutes;
+export default initializeNotificationRoutes;

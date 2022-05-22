@@ -4,40 +4,32 @@ import { IActivityType, IDynamooseDocument } from '../../interfaces/app';
 
 export interface INotification {
     id: string;
-    createdAt: number;
+    userId: string;
+    createdAt: Date;
     read: boolean;
     resourceType: IActivityType;
-    resourceRef: string;
-    expiresAt: number;
-}
-
-const NotificationSchema = new dynamoose.Schema({
-    id: { type: String },
-    createdAt: { type: Number },
-    read: { type: Boolean },
-    resourceType: { type: String },
-    resourceRef: { type: String },
-    expiresAt: { type: Number },
-});
-
-export interface INotifications {
-    id: string;
-    notifications: Array<INotification>;
-    userResourceRef: string;
+    resourceId: string;
+    expiresAt: Date;
+    relatedUserIds: Array<string>;
 }
 
 const NotificationsSchema = new dynamoose.Schema({
-    id: { type: String, hashKey: true },
-    notifications: { type: Array, schema: Array.of(NotificationSchema) },
-    userResourceRef: {
+    id: {
         type: String,
         index: {
-            name: 'userResourceRefIndex',
+            name: 'notificationIdIndex',
             global: true,
         },
     },
+    userId: { type: String, hashKey: true },
+    createdAt: { type: Date, rangeKey: true },
+    read: { type: Boolean },
+    resourceType: { type: String },
+    resourceId: { type: String },
+    expiresAt: { type: Date },
+    relatedUserIds: { type: Array.of(String) },
 });
 
-const Notifications = dynamoose.model<IDynamooseDocument<INotifications>>(TABLE.NOTIFICATIONS, NotificationsSchema);
+const Notifications = dynamoose.model<IDynamooseDocument<INotification>>(TABLE.NOTIFICATIONS, NotificationsSchema);
 
 export default Notifications;

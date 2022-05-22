@@ -18,6 +18,6 @@ export type IConnectionActivityType = 'connectionRequest' | 'connectionConfirmat
 export type IActivityType = IConnectionActivityType;
 
 export interface INotificationActivity {
-    resourceRefId: string;
+    resourceId: string;
     activityType: IActivityType;
 }
