@@ -27,7 +27,7 @@ const NotificationsSchema = new dynamoose.Schema({
     resourceType: { type: String },
     resourceId: { type: String },
     expiresAt: { type: Date },
-    relatedUserIds: { type: Array.of(String) },
+    relatedUserIds: { type: Array, schema: Array.of(String) },
 });
 
 const Notifications = dynamoose.model<IDynamooseDocument<INotification>>(TABLE.NOTIFICATIONS, NotificationsSchema);
