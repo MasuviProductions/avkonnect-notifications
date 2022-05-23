@@ -1,8 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ErrorCode, ErrorMessage } from '../../../constants/errors';
-import { INotifications } from '../../../db/models/notifications';
+import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
-import { AppResponse } from '../../../interfaces/app';
+import { HttpResponse } from '../../../interfaces/app';
 
 export const getUserNotifications = async (
     request: FastifyRequest<{ Params: { userId: string } }>,
@@ -11,19 +10,9 @@ export const getUserNotifications = async (
     const userId = request.params.userId;
     const userNotifications = await DB_QUERIES.getNotificationsByUserId(userId);
 
-    const response: AppResponse<INotifications> = {
-        statusCode: 0,
+    const response: HttpResponse<Array<INotification>> = {
+        success: true,
+        data: userNotifications || [],
     };
-
-    if (!userNotifications) {
-        response.statusCode = 404;
-        response.error = {
-            code: ErrorCode.NotFound,
-            message: ErrorMessage.NotFound,
-        };
-    } else {
-        response.statusCode = 200;
-        response.data = userNotifications;
-    }
-    reply.status(response.statusCode).send(response);
+    reply.status(200).send(response);
 };

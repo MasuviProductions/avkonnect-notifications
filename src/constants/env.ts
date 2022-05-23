@@ -14,6 +14,7 @@ const ENV = {
             ISSUER_URL: process.env.COGNITO_ISSUER_URL,
         },
     },
+    AVKONNECT_CORE_URL: process.env.AVKONNECT_CORE_URL,
 };
 
 export default ENV;

@@ -1,5 +1,6 @@
 import { fastify } from 'fastify';
-import initRouter from './routes';
+import fastifyCors from '@fastify/cors';
+import initializeRoutes from './routes';
 import { initDynamoDB } from './db/client';
 import { errorHandler } from './middlewares/errorHandler';
 
@@ -9,9 +10,11 @@ const APP = fastify({
     logger: true,
 });
 
+APP.register(fastifyCors);
+
 APP.setErrorHandler(errorHandler);
 
-initRouter(APP);
+initializeRoutes(APP);
 
 export { APP };
 export default APP;

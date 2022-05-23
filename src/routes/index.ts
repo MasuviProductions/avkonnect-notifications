@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import initializeNotificationroutes from './v1/notifications';
+import initializeNotificationRoutes from './v1/notifications';
 
 const initializeRoutes = (fastifyInstance: FastifyInstance) => {
-    fastifyInstance.register(initializeNotificationroutes, { prefix: 'api/v1' });
+    fastifyInstance.register(initializeNotificationRoutes, { prefix: 'api/v1' });
 };
 
 export default initializeRoutes;

@@ -1,43 +1,46 @@
 import { v4 } from 'uuid';
-import DB_HELPERS from '../../../db/helpers';
 import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
 import { IConnectionActivityType, INotificationActivity } from '../../../interfaces/app';
+import AVKKONNECT_CORE_SERVICE from '../../../services/avkonnect-core';
 
 const updateConnectionNotifications = async (
     notificationActivity: INotificationActivity,
     connectionActivityType: IConnectionActivityType
 ) => {
-    const connectionResource = await DB_QUERIES.getConnection(notificationActivity.resourceRefId);
-    // eslint-disable-next-line no-console
-    console.info('Connection resource:', JSON.stringify(connectionResource));
+    const connectionResourceData = await AVKKONNECT_CORE_SERVICE.getConnection(notificationActivity.resourceId);
+    const connectionResource = connectionResourceData?.data;
+
     if (!connectionResource) {
-        throw Error(`Connection resource ${notificationActivity.resourceRefId} not found`);
-    }
-    const userNotificationBox = await DB_HELPERS.getUserNotificationsForceCreated(connectionResource.connectorId);
-    if (!userNotificationBox) {
-        throw Error(`User notifications resource for user ${connectionResource.connectorId} not found`);
+        throw Error(`Connection resource for connectionId{${notificationActivity.resourceId}} not found`);
     }
     // eslint-disable-next-line no-console
-    console.info('User notification resource:', JSON.stringify(userNotificationBox));
+    console.info(
+        `Connection resource for connectionId{${notificationActivity.resourceId}}:`,
+        JSON.stringify(connectionResource)
+    );
+
     const notification: INotification = {
+        userId: connectionResource.connectorId,
         id: v4(),
-        createdAt: Date.now(),
-        expiresAt: Math.pow(10, 38) - 1,
+        createdAt: new Date(Date.now()),
+        expiresAt: new Date(8640000000000000),
         read: false,
         resourceType: connectionActivityType,
-        resourceRef: connectionResource.id,
+        resourceId: connectionResource.id,
+        relatedUserIds: [connectionResource.connecteeId],
     };
-    const updatedUserNotifications = await DB_QUERIES.updateUserNotification(userNotificationBox.id, [
-        notification,
-        ...userNotificationBox.notifications,
-    ]);
-    if (!updatedUserNotifications) {
-        throw Error(`User notifications resource for user ${connectionResource.connectorId} could not be updated`);
+    const userConnectionNotification = await DB_QUERIES.createNotification(notification);
+    if (!userConnectionNotification) {
+        throw Error(
+            `Connection request notifications for userId{${connectionResource.connectorId}} from userId{${connectionResource.connecteeId}} could not be created`
+        );
     }
     // eslint-disable-next-line no-console
-    console.info('Updated user notification resource:', JSON.stringify(updatedUserNotifications));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    console.info(
+        `Connection request notifications for userId{${connectionResource.connectorId}} from userId{${connectionResource.connecteeId}}:`,
+        JSON.stringify(userConnectionNotification)
+    );
     return;
 };
 
