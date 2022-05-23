@@ -47,6 +47,7 @@
     "dependencies": {
         "@fastify/cors": "^7.0.0",
         "aws-sdk": "^2.1082.0",
+        "axios": "^0.27.2",
         "dotenv": "^16.0.0",
         "dynamoose": "^2.8.5",
         "fastify": "^3.27.2",

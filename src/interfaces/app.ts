@@ -1,14 +1,28 @@
 import { Document } from 'dynamoose/dist/Document';
 
-export interface AppResponseError {
+export interface HttpResponseError {
     code: string;
     message: string;
 }
 
-export interface AppResponse<T = unknown> {
-    statusCode: number;
+export interface HttpResponsePagination {
+    totalCount: number;
+    totalPages: number;
+    page: number;
+    count: number;
+}
+
+export interface HttpDynamoDBResponsePagination {
+    nextSearchStartFromId?: string;
+    count: number;
+}
+
+export interface HttpResponse<T = unknown> {
+    success: boolean;
     data?: T;
-    error?: AppResponseError;
+    error?: HttpResponseError;
+    pagination?: HttpResponsePagination;
+    dDBPagination?: HttpDynamoDBResponsePagination;
 }
 
 export type IDynamooseDocument<T> = T & Document;

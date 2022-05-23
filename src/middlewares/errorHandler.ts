@@ -1,15 +1,15 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ErrorCode } from '../constants/errors';
-import { AppResponse } from '../interfaces/app';
+import { HttpResponse } from '../interfaces/app';
 
 export const errorHandler = (error: Error, _request: FastifyRequest, reply: FastifyReply) => {
-    const response: AppResponse<string> = {
-        statusCode: 500,
+    const response: HttpResponse<string> = {
+        success: false,
         error: {
             code: ErrorCode.InternalServerError,
             message: error.message,
         },
     };
 
-    reply.status(response.statusCode).send(response);
+    reply.status(500).send(response);
 };

@@ -2,20 +2,23 @@ import { v4 } from 'uuid';
 import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
 import { IConnectionActivityType, INotificationActivity } from '../../../interfaces/app';
+import AVKKONNECT_CORE_SERVICE from '../../../services/avkonnect-core';
 
 const updateConnectionNotifications = async (
     notificationActivity: INotificationActivity,
     connectionActivityType: IConnectionActivityType
 ) => {
-    const connectionResource = await DB_QUERIES.getConnection(notificationActivity.resourceId);
+    const connectionResourceData = await AVKKONNECT_CORE_SERVICE.getConnection(notificationActivity.resourceId);
+    const connectionResource = connectionResourceData?.data;
+
+    if (!connectionResource) {
+        throw Error(`Connection resource for connectionId{${notificationActivity.resourceId}} not found`);
+    }
     // eslint-disable-next-line no-console
     console.info(
         `Connection resource for connectionId{${notificationActivity.resourceId}}:`,
         JSON.stringify(connectionResource)
     );
-    if (!connectionResource) {
-        throw Error(`Connection resource for connectionId{${notificationActivity.resourceId}} not found`);
-    }
 
     const notification: INotification = {
         userId: connectionResource.connectorId,
