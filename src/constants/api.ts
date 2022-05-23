@@ -5,7 +5,7 @@ const AVKONNECT_URL = {
 };
 
 const API_ENDPOINTS = {
-    GET_CONNECTION: (connectionId: string): string => `${AVKONNECT_URL.CORE}/connections/${connectionId}`,
+    GET_CONNECTION: (connectionId: string): string => `${AVKONNECT_URL.CORE}/api/v1/connections/${connectionId}`,
 };
 
 export default API_ENDPOINTS;
