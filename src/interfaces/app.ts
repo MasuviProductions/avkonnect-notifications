@@ -1,4 +1,7 @@
 import { Document } from 'dynamoose/dist/Document';
+import { ObjectType } from 'dynamoose/dist/General';
+import { INotification } from '../db/models/notifications';
+import { IUserApiModel } from './api';
 
 export interface HttpResponseError {
     code: string;
@@ -13,7 +16,7 @@ export interface HttpResponsePagination {
 }
 
 export interface HttpDynamoDBResponsePagination {
-    nextSearchStartFromId?: string;
+    nextSearchStartFromKey?: ObjectType;
     count: number;
 }
 
@@ -34,4 +37,8 @@ export type IActivityType = IConnectionActivityType;
 export interface INotificationActivity {
     resourceId: string;
     activityType: IActivityType;
+}
+
+export interface INotificationApiModel extends Partial<INotification> {
+    relatedUsers?: Array<Partial<IUserApiModel>>;
 }
