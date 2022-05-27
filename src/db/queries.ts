@@ -1,8 +1,23 @@
+import { ObjectType } from 'dynamoose/dist/General';
+import { HttpDynamoDBResponsePagination } from '../interfaces/app';
+import DB_HELPERS from './helpers';
 import Notifications, { INotification } from './models/notifications';
 
-const getNotificationsByUserId = async (userId: string): Promise<Array<INotification> | undefined> => {
-    const notifications = await Notifications.query('userId').eq(userId).exec();
-    return notifications;
+const getNotificationsByUserId = async (
+    userId: string,
+    limit: number,
+    nextSearchStartFromKey?: ObjectType
+): Promise<{ documents: Partial<INotification>[]; dDBPagination: HttpDynamoDBResponsePagination }> => {
+    const notificationsQuery = Notifications.query('userId').eq(userId);
+
+    const paginatedDocuments = DB_HELPERS.fetchDynamoDBPaginatedDocuments<INotification>(
+        notificationsQuery,
+        [],
+        limit,
+        ['userId', 'createdAt'],
+        nextSearchStartFromKey
+    );
+    return paginatedDocuments;
 };
 
 const createNotification = async (notification: INotification): Promise<INotification> => {
