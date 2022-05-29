@@ -27,4 +27,9 @@ export interface IUserApiModel {
     experiencesRefId: string;
     skillsRefId: string;
     certificationsRefId: string;
+    unseenNotificationsCount?: number;
 }
+
+export type IUserApiResponse = IUserApiModel;
+
+export type IPatchUserApiRequest = Pick<IUserApiModel, 'unseenNotificationsCount'>;

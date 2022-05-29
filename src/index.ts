@@ -2,7 +2,7 @@ import { fastify } from 'fastify';
 import fastifyCors from '@fastify/cors';
 import initializeRoutes from './routes';
 import { initDynamoDB } from './db/client';
-import { errorHandler } from './middlewares/errorHandler';
+import errorHandler from './middlewares/errorHandler';
 
 initDynamoDB();
 

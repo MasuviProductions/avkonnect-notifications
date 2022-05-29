@@ -1,7 +1,22 @@
 import { Document } from 'dynamoose/dist/Document';
 import { ObjectType } from 'dynamoose/dist/General';
+import {
+    RouteHandlerMethod,
+    RawServerDefault,
+    RawRequestDefaultExpression,
+    RawReplyDefaultExpression,
+    FastifyContextConfig,
+} from 'fastify';
 import { INotification } from '../db/models/notifications';
 import { IUserApiModel } from './api';
+
+export type RequestHandler<Request = unknown> = RouteHandlerMethod<
+    RawServerDefault,
+    RawRequestDefaultExpression<RawServerDefault>,
+    RawReplyDefaultExpression<RawServerDefault>,
+    Request,
+    FastifyContextConfig
+>;
 
 export interface HttpResponseError {
     code: string;
@@ -41,4 +56,8 @@ export interface INotificationActivity {
 
 export interface INotificationApiModel extends Partial<INotification> {
     relatedUsers?: Array<Partial<IUserApiModel>>;
+}
+
+export interface INotificationUnseenCount {
+    pendingNotificationCount: number;
 }
