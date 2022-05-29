@@ -13,10 +13,9 @@ const notificationsActivityHandler = async (event: ISQSEvent) => {
         try {
             const notificationActivity = JSON.parse(message.body) as INotificationActivity;
             await processNotificationActivity(notificationActivity);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (err: any) {
+        } catch (err) {
             // eslint-disable-next-line no-console
-            console.log('ERROR:', err.message);
+            console.log('ERROR:', (err as Error).message);
         }
     }
 };

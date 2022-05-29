@@ -8,7 +8,7 @@
         "lint:fix": "eslint . --ext .ts --fix --max-warnings=0",
         "lint": "eslint . --ext .ts",
         "prettier:fix": "prettier --config .prettierrc --fix \"src/**/*.{ts,css,html}\" --max-warnings=0",
-        "start:dev": "nodemon",
+        "start:dev": "nodemon --files ./src/server.ts",
         "start:server": "node ./build/server.js",
         "start": "npm run build && node build/server.js",
         "serverless:credentials": "eval $(grep '^AWS_KEY' .env) && eval $(grep '^AWS_SECRET' .env) && serverless config credentials --provider aws --key ${AWS_KEY} --secret ${AWS_SECRET}",
@@ -46,6 +46,7 @@
     },
     "dependencies": {
         "@fastify/cors": "^7.0.0",
+        "@masuviproductions/avkonnect-auth": "2.3.1",
         "aws-sdk": "^2.1082.0",
         "axios": "^0.27.2",
         "dotenv": "^16.0.0",
