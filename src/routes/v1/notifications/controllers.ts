@@ -92,3 +92,33 @@ export const getUserNotifications: RequestHandler<{
     };
     reply.status(200).send(response);
 };
+
+const readNotificationById: RequestHandler<{ Params: { notificationId: string } }> = async (request, reply) => {
+    const notificationId = request.params.notificationId;
+    const readNotification = await DB_QUERIES.getNotificationsByNotificationId(notificationId);
+    const response: HttpResponse<Array<INotificationApiModel>> = {
+        success: true,
+    };
+
+    if (!readNotification) {
+        response.data = readNotification;
+        reply.status(404).send(response);
+    }
+    const updateNotification = await DB_QUERIES.updateNotificationReadStatus(
+        readNotification.userId,
+        readNotification.createdAt
+    );
+    if (!updateNotification) {
+        response.data = updateNotification;
+        reply.status(404).send(response);
+    } else {
+        reply.status(200).send(response);
+    }
+};
+
+const NOTIFICATION_CONTROLLER = {
+    getUserNotifications,
+    readNotificationById,
+};
+
+export default NOTIFICATION_CONTROLLER;

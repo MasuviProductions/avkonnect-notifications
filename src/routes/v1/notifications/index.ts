@@ -5,6 +5,7 @@ import {
     getUserUnseenNotificationsCount,
     resetUserUnseenNotificationsCount,
 } from './controllers';
+import NOTIFICATION_CONTROLLER from './controllers';
 
 const initializeNotificationRoutes = (
     fastify: FastifyInstance,
@@ -22,6 +23,8 @@ const initializeNotificationRoutes = (
         { preHandler: [authHandler] },
         resetUserUnseenNotificationsCount as RouteHandler
     );
+
+    fastify.patch('/notifications/:notificationId', NOTIFICATION_CONTROLLER.readNotificationById);
     done();
 };
 

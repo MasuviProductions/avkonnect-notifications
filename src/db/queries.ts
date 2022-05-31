@@ -20,15 +20,27 @@ const getNotificationsByUserId = async (
     return paginatedDocuments;
 };
 
+const getNotificationsByNotificationId = async (notificationId: string): Promise<INotification> => {
+    const notification = await Notifications.query('id').eq(notificationId).using('notificationIdIndex').exec();
+    return notification[0];
+};
+
 const createNotification = async (notification: INotification): Promise<INotification> => {
     const notificationsObj = new Notifications(notification);
     await notificationsObj.save();
     return notification;
 };
 
+const updateNotificationReadStatus = async (userId: string, createdAt: Date): Promise<INotification> => {
+    const updated = await Notifications.update({ userId: userId, createdAt: createdAt.getTime() }, { read: true });
+    return updated;
+};
+
 const DB_QUERIES = {
     createNotification,
     getNotificationsByUserId,
+    updateNotificationReadStatus,
+    getNotificationsByNotificationId,
 };
 
 export default DB_QUERIES;
