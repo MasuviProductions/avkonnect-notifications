@@ -5,11 +5,11 @@ import { IActivityType, IDynamooseDocument } from '../../interfaces/app';
 export interface INotification {
     id: string;
     userId: string;
-    createdAt: Date;
+    createdAt: number;
     read: boolean;
     resourceType: IActivityType;
     resourceId: string;
-    expiresAt: Date;
+    expiresAt: number;
     relatedUserIds: Array<string>;
 }
 

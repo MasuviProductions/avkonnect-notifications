@@ -8,7 +8,7 @@ const getNotificationsByUserId = async (
     limit: number,
     nextSearchStartFromKey?: ObjectType
 ): Promise<{ documents: Partial<INotification>[]; dDBPagination: HttpDynamoDBResponsePagination }> => {
-    const notificationsQuery = Notifications.query('userId').eq(userId);
+    const notificationsQuery = Notifications.query('userId').eq(userId).sort('descending');
 
     const paginatedDocuments = DB_HELPERS.fetchDynamoDBPaginatedDocuments<INotification>(
         notificationsQuery,
