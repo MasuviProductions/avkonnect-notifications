@@ -27,8 +27,8 @@ const updateConnectionNotifications = async (
     const notification: INotification = {
         userId: connectionResource.connectorId,
         id: v4(),
-        createdAt: Date.now(),
-        expiresAt: 8640000000000000,
+        createdAt: new Date(Date.now()),
+        expiresAt: new Date(8640000000000000),
         read: false,
         resourceType: connectionActivityType,
         resourceId: connectionResource.id,
