@@ -10,17 +10,19 @@ const getNotificationsByUserId = async (
 ): Promise<{ documents: Partial<INotification>[]; dDBPagination: HttpDynamoDBResponsePagination }> => {
     const notificationsQuery = Notifications.query('userId').eq(userId).sort('descending');
 
-    if (nextSearchStartFromKey) {
-        nextSearchStartFromKey.createdAt = new Date(nextSearchStartFromKey.createdAt).getTime();
-    }
-
-    const paginatedDocuments = DB_HELPERS.fetchDynamoDBPaginatedDocuments<INotification>(
+    const paginatedDocuments = await DB_HELPERS.fetchDynamoDBPaginatedDocuments<INotification>(
         notificationsQuery,
         [],
         limit,
         ['userId', 'createdAt'],
         nextSearchStartFromKey
     );
+
+    if (paginatedDocuments.dDBPagination.nextSearchStartFromKey) {
+        paginatedDocuments.dDBPagination.nextSearchStartFromKey.createdAt = (
+            paginatedDocuments.dDBPagination.nextSearchStartFromKey.createdAt as Date
+        ).getTime();
+    }
     return paginatedDocuments;
 };
 
