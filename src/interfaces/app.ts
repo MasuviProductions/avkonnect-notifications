@@ -5,17 +5,30 @@ import {
     RawServerDefault,
     RawRequestDefaultExpression,
     RawReplyDefaultExpression,
-    FastifyContextConfig,
+    ContextConfigDefault,
+    preHandlerAsyncHookHandler,
+    RequestGenericInterface,
 } from 'fastify';
+import { ReplyGenericInterface } from 'fastify/types/reply';
 import { INotification } from '../db/models/notifications';
 import { IUserApiModel } from './api';
+
+interface FastifyRouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
 export type RequestHandler<Request = unknown> = RouteHandlerMethod<
     RawServerDefault,
     RawRequestDefaultExpression<RawServerDefault>,
     RawReplyDefaultExpression<RawServerDefault>,
-    Request,
-    FastifyContextConfig
+    Request & FastifyRouteGenericInterface,
+    ContextConfigDefault
+>;
+
+export type PreRequestHandler<Request = unknown> = preHandlerAsyncHookHandler<
+    RawServerDefault,
+    RawRequestDefaultExpression<RawServerDefault>,
+    RawReplyDefaultExpression<RawServerDefault>,
+    Request & FastifyRouteGenericInterface,
+    ContextConfigDefault
 >;
 
 export interface HttpResponseError {

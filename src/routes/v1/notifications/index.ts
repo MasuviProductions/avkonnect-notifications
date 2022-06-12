@@ -1,5 +1,6 @@
-import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions, RouteHandler } from 'fastify';
+import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify';
 import { authHandler } from '../../../middlewares/authHandler';
+import { userPathValidationHandler } from '../../../middlewares/userPathValidationHandler';
 import {
     getUserNotifications,
     getUserUnseenNotificationsCount,
@@ -12,16 +13,20 @@ const initializeNotificationRoutes = (
     _opts: FastifyRegisterOptions<FastifyPluginOptions>,
     done: () => void
 ) => {
-    fastify.get('/notifications/users/:userId', { preHandler: [authHandler] }, getUserNotifications as RouteHandler);
     fastify.get(
-        '/notifications/users/:userId/unseen',
-        { preHandler: [authHandler] },
-        getUserUnseenNotificationsCount as RouteHandler
+        '/users/:userId/notifications',
+        { preHandler: [authHandler, userPathValidationHandler] },
+        getUserNotifications
+    );
+    fastify.get(
+        '/users/:userId/notifications/unseen',
+        { preHandler: [authHandler, userPathValidationHandler] },
+        getUserUnseenNotificationsCount
     );
     fastify.delete(
-        '/notifications/users/:userId/unseen',
-        { preHandler: [authHandler] },
-        resetUserUnseenNotificationsCount as RouteHandler
+        '/users/:userId/notifications/unseen',
+        { preHandler: [authHandler, userPathValidationHandler] },
+        resetUserUnseenNotificationsCount
     );
 
     fastify.patch(
