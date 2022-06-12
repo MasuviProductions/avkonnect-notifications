@@ -1,4 +1,4 @@
-name: Node Boilerplate
+name: avkonnect-notifications
 
 on:
     push:
