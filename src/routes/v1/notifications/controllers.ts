@@ -93,14 +93,18 @@ export const getUserNotifications: RequestHandler<{
     reply.status(200).send(response);
 };
 
-const readNotificationById: RequestHandler<{ Params: { notificationId: string } }> = async (request, reply) => {
-    const notificationId = request.params.notificationId;
-    const readNotification = await DB_QUERIES.getNotificationsByNotificationId(notificationId);
+export const updateNotificationAsRead: RequestHandler<{ Params: { notificationId: string } }> = async (
+    request,
+    reply
+) => {
+    const notification = request.params.notificationId;
+    const readNotification = await DB_QUERIES.getNotificationsByNotificationId(notification);
     const response: HttpResponse<Array<INotificationApiModel>> = {
         success: true,
     };
 
     if (!readNotification) {
+        response.success = false;
         response.data = readNotification;
         reply.status(404).send(response);
     }
@@ -109,6 +113,7 @@ const readNotificationById: RequestHandler<{ Params: { notificationId: string } 
         readNotification.createdAt
     );
     if (!updateNotification) {
+        response.success = false;
         response.data = updateNotification;
         reply.status(404).send(response);
     } else {
@@ -118,7 +123,6 @@ const readNotificationById: RequestHandler<{ Params: { notificationId: string } 
 
 const NOTIFICATION_CONTROLLER = {
     getUserNotifications,
-    readNotificationById,
 };
 
 export default NOTIFICATION_CONTROLLER;
