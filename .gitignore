@@ -3,5 +3,4 @@ build
 .env
 env
 .npmrc
-env.dev
-env.prod
+

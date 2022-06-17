@@ -1,6 +1,7 @@
 import { ObjectType } from 'dynamoose/dist/General';
 import ENV from '../../../constants/env';
 import { ErrorCode, ErrorMessage } from '../../../constants/errors';
+import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
 import { HttpResponse, INotificationApiModel, INotificationUnseenCount, RequestHandler } from '../../../interfaces/app';
 import AVKKONNECT_CORE_SERVICE from '../../../services/avkonnect-core';
@@ -93,32 +94,27 @@ export const getUserNotifications: RequestHandler<{
     reply.status(200).send(response);
 };
 
-export const updateNotificationAsRead: RequestHandler<{ Params: { notificationId: string } }> = async (
+export const updateNotificationAsRead: RequestHandler<{ Params: { notificationId: string; userId: string } }> = async (
     request,
     reply
 ) => {
     const notification = request.params.notificationId;
     const readNotification = await DB_QUERIES.getNotificationsByNotificationId(notification);
-    const response: HttpResponse<Array<INotificationApiModel>> = {
-        success: true,
-    };
-
     if (!readNotification) {
-        response.success = false;
-        response.data = readNotification;
-        reply.status(404).send(response);
+        throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
-    const updateNotification = await DB_QUERIES.updateNotificationReadStatus(
+    const updatedNotification = await DB_QUERIES.updateNotificationReadStatus(
         readNotification.userId,
         readNotification.createdAt
     );
-    if (!updateNotification) {
-        response.success = false;
-        response.data = updateNotification;
-        reply.status(404).send(response);
-    } else {
-        reply.status(200).send(response);
+    if (!updatedNotification) {
+        throw new HttpError(ErrorMessage.ResourceUpdateError, 500, ErrorCode.ResourceUpdateError);
     }
+    const response: HttpResponse<INotification> = {
+        success: true,
+        data: updatedNotification,
+    };
+    reply.status(200).send(response);
 };
 
 const NOTIFICATION_CONTROLLER = {
