@@ -25,7 +25,7 @@ const initializeNotificationRoutes = (
     );
 
     fastify.patch(
-        ' /users/:userId/notifications/:notificationId/read',
+        '/users/:userId/notifications/:notificationId/read',
         { preHandler: [authHandler] },
         updateNotificationAsRead as RouteHandler
     );
