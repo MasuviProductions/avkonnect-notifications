@@ -1,6 +1,7 @@
 import { ObjectType } from 'dynamoose/dist/General';
 import ENV from '../../../constants/env';
 import { ErrorCode, ErrorMessage } from '../../../constants/errors';
+import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
 import { HttpResponse, INotificationApiModel, INotificationUnseenCount, RequestHandler } from '../../../interfaces/app';
 import AVKKONNECT_CORE_SERVICE from '../../../services/avkonnect-core';
@@ -92,3 +93,32 @@ export const getUserNotifications: RequestHandler<{
     };
     reply.status(200).send(response);
 };
+
+export const updateNotificationAsRead: RequestHandler<{ Params: { notificationId: string; userId: string } }> = async (
+    request,
+    reply
+) => {
+    const notification = request.params.notificationId;
+    const readNotification = await DB_QUERIES.getNotificationsByNotificationId(notification);
+    if (!readNotification) {
+        throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
+    }
+    const updatedNotification = await DB_QUERIES.updateNotificationReadStatus(
+        readNotification.userId,
+        readNotification.createdAt
+    );
+    if (!updatedNotification) {
+        throw new HttpError(ErrorMessage.ResourceUpdateError, 500, ErrorCode.ResourceUpdateError);
+    }
+    const response: HttpResponse<INotification> = {
+        success: true,
+        data: updatedNotification,
+    };
+    reply.status(200).send(response);
+};
+
+const NOTIFICATION_CONTROLLER = {
+    getUserNotifications,
+};
+
+export default NOTIFICATION_CONTROLLER;
