@@ -5,6 +5,7 @@ import {
     getUserNotifications,
     getUserUnseenNotificationsCount,
     resetUserUnseenNotificationsCount,
+    updateNotificationAsRead,
 } from './controllers';
 
 const initializeNotificationRoutes = (
@@ -26,6 +27,11 @@ const initializeNotificationRoutes = (
         '/users/:userId/notifications/unseen',
         { preHandler: [authHandler, userPathValidationHandler] },
         resetUserUnseenNotificationsCount
+    );
+    fastify.patch(
+        '/users/:userId/notifications/:notificationId/read',
+        { preHandler: [authHandler, userPathValidationHandler] },
+        updateNotificationAsRead
     );
     done();
 };
