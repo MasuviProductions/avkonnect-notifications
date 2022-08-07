@@ -2,12 +2,28 @@ import { v4 } from 'uuid';
 import ENV from '../../../constants/env';
 import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
-import { IConnectionActivityType, INotificationActivity } from '../../../interfaces/app';
+import { INotificationActivity, IConnectionActivity } from '../../../interfaces/app';
 import AVKKONNECT_CORE_SERVICE from '../../../services/avkonnect-core';
 
-const updateConnectionNotifications = async (
+export const connectionNotificationHandler = async (notificationActivity: INotificationActivity) => {
+    switch (notificationActivity.resourceActivity) {
+        case 'connectionRequest': {
+            await updateConnectionNotifications(notificationActivity, 'connectionRequest');
+            return;
+        }
+        case 'connectionConfirmation': {
+            await updateConnectionNotifications(notificationActivity, 'connectionConfirmation');
+            return;
+        }
+        default: {
+            return;
+        }
+    }
+};
+
+export const updateConnectionNotifications = async (
     notificationActivity: INotificationActivity,
-    connectionActivityType: IConnectionActivityType
+    connectionActivity: IConnectionActivity
 ) => {
     const connectionResourceData = await AVKKONNECT_CORE_SERVICE.getConnection(
         ENV.AUTH_SERVICE_KEY,
@@ -25,14 +41,17 @@ const updateConnectionNotifications = async (
     );
 
     const notification: INotification = {
-        userId: connectionResource.connectorId,
         id: v4(),
+        userId: connectionResource.connectorId,
         createdAt: new Date(Date.now()),
         expiresAt: new Date(8640000000000000),
         read: false,
-        resourceType: connectionActivityType,
         resourceId: connectionResource.id,
-        relatedUserIds: [connectionResource.connecteeId],
+        resourceActivity: connectionActivity,
+        resourceType: 'connection',
+        aggregatorCount: 0,
+        sourceId: connectionResource.connecteeId,
+        sourceType: 'user',
     };
     const userConnectionNotification = await DB_QUERIES.createNotification(notification);
     if (!userConnectionNotification) {

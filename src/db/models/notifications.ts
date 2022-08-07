@@ -1,16 +1,19 @@
 import * as dynamoose from 'dynamoose';
 import { TABLE } from '../../constants/db';
-import { IActivityType, IDynamooseDocument } from '../../interfaces/app';
+import { IDynamooseDocument, IResourceActivity, IResourceType, ISourceType } from '../../interfaces/app';
 
 export interface INotification {
     id: string;
     userId: string;
     createdAt: Date;
     read: boolean;
-    resourceType: IActivityType;
     resourceId: string;
+    resourceActivity: IResourceActivity;
+    resourceType: IResourceType;
+    aggregatorCount: number;
     expiresAt: Date;
-    relatedUserIds: Array<string>;
+    sourceId: string;
+    sourceType: ISourceType;
 }
 
 const NotificationsSchema = new dynamoose.Schema({
@@ -21,11 +24,18 @@ const NotificationsSchema = new dynamoose.Schema({
             global: true,
         },
     },
+    sourceId: { type: String },
+    sourceType: { type: String },
     userId: { type: String, hashKey: true },
     createdAt: { type: Date, rangeKey: true },
     read: { type: Boolean },
+    resourceId: {
+        type: String,
+        index: { global: true, name: 'resourceIndex', rangeKey: 'resourceType', project: true },
+    },
     resourceType: { type: String },
-    resourceId: { type: String },
+    resourceActivity: { type: String },
+    aggregatorCount: { type: Number },
     expiresAt: { type: Date },
     relatedUserIds: { type: Array, schema: Array.of(String) },
 });

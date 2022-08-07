@@ -1,14 +1,20 @@
 import { ObjectType } from 'dynamoose/dist/General';
 import ENV from '../../../constants/env';
 import { ErrorCode, ErrorMessage } from '../../../constants/errors';
-import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
-import { HttpResponse, INotificationApiModel, INotificationUnseenCount, RequestHandler } from '../../../interfaces/app';
+import { notificationEventProcessor } from '../../../events/notificationsActivity/notificationsActivityHandler';
+import {
+    HttpResponse,
+    INotificationActivity,
+    INotificationResponse,
+    INotificationsResponse,
+    INotificationUnseenCountResponse,
+    RequestHandler,
+} from '../../../interfaces/app';
 import AVKKONNECT_CORE_SERVICE from '../../../services/avkonnect-core';
 import { HttpError } from '../../../utils/error';
-import { getUsersInfoKeyValuePair } from '../../../utils/transforms';
 
-export const getUserUnseenNotificationsCount: RequestHandler<{
+const getUserUnseenNotificationsCount: RequestHandler<{
     Params: { userId: string };
 }> = async (request, reply) => {
     const userId = request.params.userId;
@@ -20,7 +26,7 @@ export const getUserUnseenNotificationsCount: RequestHandler<{
     if (!userInfoResponse?.data) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
-    const response: HttpResponse<INotificationUnseenCount> = {
+    const response: HttpResponse<INotificationUnseenCountResponse> = {
         success: true,
         data: {
             pendingNotificationCount: userInfoResponse?.data?.unseenNotificationsCount || 0,
@@ -29,7 +35,7 @@ export const getUserUnseenNotificationsCount: RequestHandler<{
     reply.status(200).send(response);
 };
 
-export const resetUserUnseenNotificationsCount: RequestHandler<{
+const resetUserUnseenNotificationsCount: RequestHandler<{
     Params: { userId: string };
 }> = async (request, reply) => {
     const userId = request.params.userId;
@@ -43,7 +49,7 @@ export const resetUserUnseenNotificationsCount: RequestHandler<{
     if (!userInfoResponse?.data) {
         throw new HttpError(ErrorMessage.NotFound, 404, ErrorCode.NotFound);
     }
-    const response: HttpResponse<INotificationUnseenCount> = {
+    const response: HttpResponse<INotificationUnseenCountResponse> = {
         success: true,
         data: {
             pendingNotificationCount: userInfoResponse.data.unseenNotificationsCount || 0,
@@ -52,7 +58,7 @@ export const resetUserUnseenNotificationsCount: RequestHandler<{
     reply.status(200).send(response);
 };
 
-export const getUserNotifications: RequestHandler<{
+const getUserNotifications: RequestHandler<{
     Params: { userId: string };
     Querystring: { limit: number; nextSearchStartFromKey: string };
 }> = async (request, reply) => {
@@ -68,33 +74,25 @@ export const getUserNotifications: RequestHandler<{
     const relatedUsers = new Set<string>();
 
     notificationDocuments.forEach((notification) => {
-        notification.relatedUserIds?.forEach((relatedUser) => {
-            relatedUsers.add(relatedUser);
-        });
+        relatedUsers.add(notification.sourceId as string);
     });
 
     const usersInfoData = await AVKKONNECT_CORE_SERVICE.getUsersInfo('', Array.from(relatedUsers));
-    const usersInfoKeyValuePair = getUsersInfoKeyValuePair(usersInfoData.data || []);
-    const notificationDocumentsWithRelatedUserInfo = notificationDocuments.map((notificationDocument) => {
-        const relatedUsers = notificationDocument.relatedUserIds?.map((relatedUserId) => {
-            return usersInfoKeyValuePair[relatedUserId];
-        });
-        const notificationDocumentWithRelatedUserInfo: INotificationApiModel = {
-            ...notificationDocument,
-            relatedUsers,
-        };
-        return notificationDocumentWithRelatedUserInfo;
-    });
 
-    const response: HttpResponse<Array<INotificationApiModel>> = {
+    const notificationsInfo: INotificationsResponse = {
+        notifications: notificationDocuments,
+        relatedSources: [...(usersInfoData.data || [])],
+    };
+
+    const response: HttpResponse<INotificationsResponse> = {
         success: true,
-        data: notificationDocumentsWithRelatedUserInfo,
+        data: notificationsInfo,
         dDBPagination: dDBPagination,
     };
     reply.status(200).send(response);
 };
 
-export const updateNotificationAsRead: RequestHandler<{ Params: { notificationId: string; userId: string } }> = async (
+const updateNotificationAsRead: RequestHandler<{ Params: { notificationId: string; userId: string } }> = async (
     request,
     reply
 ) => {
@@ -110,15 +108,28 @@ export const updateNotificationAsRead: RequestHandler<{ Params: { notificationId
     if (!updatedNotification) {
         throw new HttpError(ErrorMessage.ResourceUpdateError, 500, ErrorCode.ResourceUpdateError);
     }
-    const response: HttpResponse<INotification> = {
+    const response: HttpResponse<INotificationResponse> = {
         success: true,
         data: updatedNotification,
     };
     reply.status(200).send(response);
 };
 
+const notificationGenerateSampleEvent: RequestHandler<{ Body: INotificationActivity }> = async (request, reply) => {
+    const notificationActivity = request.body;
+    await notificationEventProcessor(notificationActivity);
+    const response: HttpResponse = {
+        success: true,
+    };
+    reply.status(200).send(response);
+};
+
 const NOTIFICATION_CONTROLLER = {
     getUserNotifications,
+    updateNotificationAsRead,
+    getUserUnseenNotificationsCount,
+    resetUserUnseenNotificationsCount,
+    notificationGenerateSampleEvent,
 };
 
 export default NOTIFICATION_CONTROLLER;
