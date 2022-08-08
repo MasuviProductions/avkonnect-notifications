@@ -4,6 +4,7 @@ import { INotification } from '../../../db/models/notifications';
 import DB_QUERIES from '../../../db/queries';
 import { INotificationActivity, IConnectionActivity } from '../../../interfaces/app';
 import AVKKONNECT_CORE_SERVICE from '../../../services/avkonnect-core';
+import { updateNotificationCountForUser } from './user';
 
 export const connectionNotificationHandler = async (notificationActivity: INotificationActivity) => {
     switch (notificationActivity.resourceActivity) {
@@ -64,27 +65,7 @@ export const updateConnectionNotifications = async (
         `Connection request notifications for userId{${connectionResource.connectorId}} from userId{${connectionResource.connecteeId}}:`,
         JSON.stringify(userConnectionNotification)
     );
-    const userInfo = await AVKKONNECT_CORE_SERVICE.getUser(ENV.AUTH_SERVICE_KEY, connectionResource.connectorId);
-    if (!userInfo) {
-        throw Error(`User info not found for userId{${connectionResource.connectorId}} `);
-    }
-    const updatedUserInfo = await AVKKONNECT_CORE_SERVICE.patchUser(
-        ENV.AUTH_SERVICE_KEY,
-        connectionResource.connectorId,
-        {
-            unseenNotificationsCount: (userInfo.data?.unseenNotificationsCount || 0) + 1,
-        }
-    );
-    if (!updatedUserInfo) {
-        throw Error(
-            `User unseenNotificationsCount could not be updated for userId{${connectionResource.connectorId}} `
-        );
-    }
-    // eslint-disable-next-line no-console
-    console.info(
-        `User unseenNotificationsCount for userId{${connectionResource.connectorId}} is ${updatedUserInfo.data?.unseenNotificationsCount}`,
-        JSON.stringify(userConnectionNotification)
-    );
+    await updateNotificationCountForUser(connectionResource.connectorId);
 
     return;
 };

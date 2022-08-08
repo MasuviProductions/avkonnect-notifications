@@ -12,6 +12,7 @@ const ENV = {
     },
     AUTH_SERVICE_KEY: process.env.AUTH_SERVICE_KEY as string,
     AVKONNECT_CORE_URL: process.env.AVKONNECT_CORE_URL,
+    AVKONNECT_POSTS_URL: process.env.AVKONNECT_POSTS_URL,
     AVKONNECT_FEEDS_SQS_URL: process.env.AVKONNECT_FEEDS_SQS_URL,
 };
 

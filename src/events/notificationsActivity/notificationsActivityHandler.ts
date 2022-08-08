@@ -1,5 +1,7 @@
 import { INotificationActivity } from '../../interfaces/app';
+import { commentNotificationHandler } from './services/comments';
 import { connectionNotificationHandler } from './services/connections';
+import { postNotificationHandler } from './services/posts';
 
 interface ISQSEventRecord {
     body: string;
@@ -24,6 +26,14 @@ export const notificationEventProcessor = async (notificationActivity: INotifica
     switch (notificationActivity.resourceType) {
         case 'connection': {
             await connectionNotificationHandler(notificationActivity);
+            return;
+        }
+        case 'post': {
+            await postNotificationHandler(notificationActivity);
+            return;
+        }
+        case 'comment': {
+            await commentNotificationHandler(notificationActivity);
         }
     }
 };
