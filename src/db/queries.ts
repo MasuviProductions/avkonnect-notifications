@@ -1,5 +1,5 @@
 import { ObjectType } from 'dynamoose/dist/General';
-import { HttpDynamoDBResponsePagination } from '../interfaces/app';
+import { HttpDynamoDBResponsePagination, IResourceType } from '../interfaces/app';
 import DB_HELPERS from './helpers';
 import Notifications, { INotification } from './models/notifications';
 
@@ -42,11 +42,42 @@ const updateNotificationReadStatus = async (userId: string, createdAt: Date): Pr
     return updated;
 };
 
+const getNotificationByUserIdAndResource = async (
+    userId: string,
+    resourceId: string,
+    resourceType: IResourceType
+): Promise<Array<INotification>> => {
+    const notifications = await Notifications.query('userId')
+        .eq(userId)
+        .and()
+        .where('resourceId')
+        .eq(resourceId)
+        .and()
+        .where('resourceType')
+        .eq(resourceType)
+        .exec();
+    return notifications;
+};
+
+const updateNotification = async (
+    userId: string,
+    createdAt: Date,
+    notification: Partial<INotification>
+): Promise<INotification> => {
+    const updatedNotification = await Notifications.update(
+        { userId: userId, createdAt: createdAt.getTime() },
+        notification
+    );
+    return updatedNotification;
+};
+
 const DB_QUERIES = {
     createNotification,
     getNotificationsByUserId,
     updateNotificationReadStatus,
     getNotificationsByNotificationId,
+    getNotificationByUserIdAndResource,
+    updateNotification,
 };
 
 export default DB_QUERIES;

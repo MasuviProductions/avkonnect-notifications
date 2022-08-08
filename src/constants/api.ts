@@ -2,6 +2,7 @@ import ENV from './env';
 
 const AVKONNECT_URL = {
     CORE: ENV.AVKONNECT_CORE_URL,
+    POSTS: ENV.AVKONNECT_POSTS_URL,
 };
 
 const API_ENDPOINTS = {
@@ -10,6 +11,8 @@ const API_ENDPOINTS = {
     GET_USERS_INFO: (): string => `${AVKONNECT_URL.CORE}/api/v1/users/getUsersInfo`,
     GET_USER: (userId: string): string => `${AVKONNECT_URL.CORE}/api/v1/users/${userId}`,
     PATCH_USER: (userId: string): string => `${AVKONNECT_URL.CORE}/api/v1/users/${userId}`,
+    GET_POST: (postId: string): string => `${AVKONNECT_URL.POSTS}/api/posts/v1/posts/${postId}`,
+    GET_COMMENT: (commentId: string): string => `${AVKONNECT_URL.POSTS}/api/posts/v1/comments/${commentId}`,
 };
 
 export default API_ENDPOINTS;
