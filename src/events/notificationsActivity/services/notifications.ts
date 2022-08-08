@@ -12,22 +12,25 @@ export const createOrUpdateNotificationForResource = async (
     sourceId: string,
     sourceType: ISourceType
 ) => {
-    const userNotificationForResource = await DB_QUERIES.getNotificationByUserIdAndResource(
+    const userNotificationsForResource = await DB_QUERIES.getNotificationByUserIdAndResource(
         userId,
         resourceId,
         resourceType
     );
-    if (userNotificationForResource) {
-        const isNotificationRead = userNotificationForResource.read;
+    const userNotificationsForResourceActivity = userNotificationsForResource.find(
+        (userNotification) => userNotification.resourceActivity === resourceActivity
+    );
+    if (userNotificationsForResourceActivity) {
+        const isNotificationRead = userNotificationsForResourceActivity.read;
         const notificationToUpdate: Partial<INotification> = {
-            aggregatorCount: !isNotificationRead ? userNotificationForResource.aggregatorCount + 1 : 1,
+            aggregatorCount: !isNotificationRead ? userNotificationsForResourceActivity.aggregatorCount + 1 : 1,
             sourceId: sourceId,
             sourceType: sourceType,
             read: false,
         };
         DB_QUERIES.updateNotification(
-            userNotificationForResource.userId,
-            userNotificationForResource.createdAt,
+            userNotificationsForResourceActivity.userId,
+            userNotificationsForResourceActivity.createdAt,
             notificationToUpdate
         );
         if (isNotificationRead) {

@@ -42,8 +42,12 @@ const updateNotificationReadStatus = async (userId: string, createdAt: Date): Pr
     return updated;
 };
 
-const getNotificationByUserIdAndResource = async (userId: string, resourceId: string, resourceType: IResourceType) => {
-    const notification = await Notifications.query('userId')
+const getNotificationByUserIdAndResource = async (
+    userId: string,
+    resourceId: string,
+    resourceType: IResourceType
+): Promise<Array<INotification>> => {
+    const notifications = await Notifications.query('userId')
         .eq(userId)
         .and()
         .where('resourceId')
@@ -52,7 +56,7 @@ const getNotificationByUserIdAndResource = async (userId: string, resourceId: st
         .where('resourceType')
         .eq(resourceType)
         .exec();
-    return notification[0];
+    return notifications;
 };
 
 const updateNotification = async (
