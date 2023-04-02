@@ -9,6 +9,33 @@ export interface IConnectionApiModel {
     connectionInitiatedBy: string;
 }
 
+export type IUserImageType =
+    | 'displayPictureOriginal'
+    | 'displayPictureThumbnail'
+    | 'displayPictureMax'
+    | 'displayPictureStandard'
+    | 'backgroundPictureOriginal'
+    | 'backgroundPictureThumbnail'
+    | 'backgroundPictureMax'
+    | 'backgroundPictureStandard';
+
+export interface IImage<T extends string = string> {
+    resolution: string;
+    url: string;
+    type: T;
+}
+
+export interface IUserImage {
+    mediaUrls: Array<IMediaUrl>;
+    mediaStatus: string;
+}
+
+type IMediaUrl = IImage<IUserImageType>;
+
+export type IProfilePictureImages = IUserImage;
+
+export type IBackgroundPictureImages = IUserImage;
+
 export interface IUserApiModel {
     id: string;
     aboutUser: string;
@@ -30,6 +57,9 @@ export interface IUserApiModel {
     skillsRefId: string;
     certificationsRefId: string;
     unseenNotificationsCount?: number;
+    settingsRefId: string;
+    profilePictureImages: IProfilePictureImages;
+    backgroundPictureImages: IBackgroundPictureImages;
 }
 
 export type IUserApiResponse = IUserApiModel;
